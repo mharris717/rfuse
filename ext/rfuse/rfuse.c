@@ -3,14 +3,20 @@
 #define _XOPEN_SOURCE 500
 #endif
 //FOR LINUX ONLY
+#ifndef __APPLE__
 #include <linux/stat.h> 
 #include <linux/kdev_t.h>
+#include <sys/statfs.h>
+#else
+#include <sys/types.h>
+#define MAJOR major
+#define MINOR minor
+#endif
 
 #include <ruby.h>
 #include "ruby-compat.h"
 #include <fuse.h>
 #include <errno.h>
-#include <sys/statfs.h>
 
 #ifdef HAVE_SETXATTR
 #include <sys/xattr.h>
@@ -1257,8 +1263,13 @@ static void *rf_init(struct fuse_conn_info *conn)
     UINT2NUM(conn->async_read),
     UINT2NUM(conn->max_write),
     UINT2NUM(conn->max_readahead),
+#ifndef __APPLE__
     UINT2NUM(conn->capable),
     UINT2NUM(conn->want)
+#else
+    Qnil,
+    Qnil
+#endif
   );
 
   args[2] = fcio;

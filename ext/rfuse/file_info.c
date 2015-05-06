@@ -101,17 +101,23 @@ VALUE file_info_direct_assign(VALUE self,VALUE value) {
 VALUE file_info_nonseekable(VALUE self) {
    struct fuse_file_info *f;
    Data_Get_Struct(self,struct fuse_file_info,f);
+#ifndef __APPLE__
   if (TYPE(f->nonseekable) != T_NONE) {
     return (VALUE) f->nonseekable;
   } else {
     return Qnil;
   }
+#else
+  return Qnil;
+#endif
 }
 
 VALUE file_info_nonseekable_assign(VALUE self,VALUE value) {
    struct fuse_file_info *f;
    Data_Get_Struct(self,struct fuse_file_info,f);
+#ifndef __APPLE__
    f->nonseekable = value;
+#endif
    return value;
 }
 
